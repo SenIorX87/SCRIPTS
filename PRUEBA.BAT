@@ -1,0 +1,1 @@
+powershell -Command "Invoke-WebRequest -Uri 'https://go.microsoft.com/fwlink/p/?LinkId=2124703' -OutFile $HOME\Downloads\MicrosoftEdgeWebView2Setup.exe; Start-Process -FilePath '$HOME\Downloads\MicrosoftEdgeWebView2Setup.exe' -ArgumentList '/silent /install' -Wait"
