@@ -48,6 +48,8 @@ rem ·Añadidos más procesos relacionados con el navegador Edge para conseguir 
 rem ·Añadido Google Chrome a la lista de limpieza para todos los usuarios
 rem ·Añadido Mozilla Firefox a la lista de limpieza para todos los usuarios
 rem ·Se detiene y se reinicia el servicio de cola de impresión durante la limpieza para aumentar efectividad y descartar más errores
+rem ·Las carpetas de temp locales y Windows vacías no se estaban borrando
+
 
 
 echo **********************************************************************************************
@@ -116,21 +118,44 @@ net stop wuauserv
 net stop BITS
 net stop cryptSvc
 net stop msiserver
+net stop WSService
 
-rem Borrar archivos temporales de usuario actual
-    echo Eliminando archivos temporales de usuario.
-        del /s /q "C:\Users\%USUARIOA3M%\AppData\Local\Temp\*.*"
 
-rem Borrar archivos temporales de todos los usuarios
-    echo Eliminando archivos temporales de todos los usuarios.
-        del /s /q "C:\Windows\Temp\*.*"
+rem Limpieza de la carpeta Temp para cada usuario en C:\Users
+echo Limpiando archivos temporales de cada usuario.
+    for /D %%u in ("C:\Users\*") do (
+        del "%%u\AppData\Local\Temp\*.*" /S /Q >nul 2>&1
+)
+
+rem Eliminación de carpetas vacías dentro de Temp
+echo Eliminando carpetas vacías en las carpetas Temp.
+    for /D %%u in ("C:\Users\*") do (
+        for /D %%t in ("%%u\AppData\Local\Temp\*") do (
+            rmdir "%%t" /S /Q >nul 2>&1
+            if exist "%%t" echo No se pudo eliminar la carpeta: %%t
+    )
+)
+
+
+
+rem Borrar archivos temporales de la carpeta global Temp
+echo Eliminando archivos temporales en C:\Windows\Temp.
+    del /s /q "C:\Windows\Temp\*.*" >nul 2>&1
+
+rem Eliminación de carpetas vacías dentro de C:\Windows\Temp
+echo Eliminando carpetas vacías en C:\Windows\Temp.
+    for /D %%t in ("C:\Windows\Temp\*") do (
+        rmdir "%%t" /S /Q >nul 2>&1
+        if exist "%%t" echo No se pudo eliminar la carpeta: %%t
+)
+
 
 REM Esperar 10 segundos antes de renombrar y borrar carpetas
-echo Esperando 3 segundos antes de renombrar y borrar carpetas...
-timeout /t 3 /nobreak
+echo Esperando 1 segundo antes de renombrar y borrar carpetas asociadas a Windows Update...
+timeout /t 1 /nobreak
 
 REM Renombrar y borrar carpetas
-echo Renombrando y borrando carpetas...
+echo Renombrando y borrando carpetas asociadas a Windows Update...
 if exist C:\Windows\SoftwareDistribution (
     rename C:\Windows\SoftwareDistribution SoftwareDistribution.oldFolder
     rd /s /q C:\Windows\SoftwareDistribution.oldFolder
@@ -145,6 +170,7 @@ net start wuauserv
 net start BITS
 net start cryptSvc
 net start msiserver
+net start WSService
 
 rem Borrar archivos de la Papelera de Reciclaje
     echo Borrando archivos de la Papelera de Reciclaje.
