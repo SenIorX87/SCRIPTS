@@ -48,7 +48,8 @@ rem ·Añadidos más procesos relacionados con el navegador Edge para conseguir 
 rem ·Añadido Google Chrome a la lista de limpieza para todos los usuarios
 rem ·Añadido Mozilla Firefox a la lista de limpieza para todos los usuarios
 rem ·Se detiene y se reinicia el servicio de cola de impresión durante la limpieza para aumentar efectividad y descartar más errores
-rem ·Las carpetas de temp locales y Windows vacías no se estaban borrando
+rem ·Las carpetas de temp locales y Windows vacías no se estaban borrando. Corregido.
+rem ·Añadido directorio HubAppFileCache a la lista de directorios a vaciar en el bloque de limpieza de outlook
 
 
 
@@ -254,6 +255,15 @@ rem Elimina los archivos de caché de Outlook.
     del /f /q "C:\Users\%USUARIOA3M%\AppData\Local\Microsoft\Outlook\*.ost"
 rem Elimina los archivos de caché de búsqueda de Outlook.
     del /f /q "C:\Users\%USUARIOA3M%\AppData\Local\Microsoft\Outlook\*.oab"
+rem Borrar archivos temporales de la carpeta HubAppFileCache
+    echo Eliminando archivos temporales en HubAppFileCache
+        del /s /q "%USUARIOA3M%\AppData\Local\Microsoft\Outlook\HubAppFileCache\*.*"
+rem Eliminación de carpetas vacías dentro de HubAppFileCache
+    echo Eliminando carpetas vacías en HubAppFileCache
+        for /D %%t in ("%USUARIOA3M%\AppData\Local\Microsoft\Outlook\HubAppFileCache\*") do (
+            rmdir "%%t" /S /Q >nul
+            if exist "%%t" echo No se pudo eliminar la carpeta: %%t
+        )
 
 rem Detener el servicio de Cola de Impresión
     sc stop Spooler
