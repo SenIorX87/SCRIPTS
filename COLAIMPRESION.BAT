@@ -1,5 +1,5 @@
 @echo off
-enabledelayedexpansion
+setlocal enabledelayedexpansion
 rem Detener el servicio de Cola de Impresión
 sc stop Spooler
 timeout /t 2 /nobreak

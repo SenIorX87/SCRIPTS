@@ -112,9 +112,10 @@ rem psexec -h -u NOMBREDOMINIO\USERRESIDENTE \\%1\DATOS\TMPREM.BAT
 
 
 
-echo Eliminando archivos temporales.
-
-REM Detener servicios
+:: ================================================================================================
+:: BLOQUE LIMPIEZA TEMPORALES Y WINDOWS UPDATE
+:: ================================================================================================
+REM Detener servicios para limpieza más profunda y sin interferencias
 net stop wuauserv
 net stop BITS
 net stop cryptSvc
@@ -155,7 +156,7 @@ REM Esperar 10 segundos antes de renombrar y borrar carpetas
 echo Esperando 1 segundo antes de renombrar y borrar carpetas asociadas a Windows Update...
 timeout /t 1 /nobreak
 
-REM Renombrar y borrar carpetas
+REM Renombrar y borrar carpetas asociadas a Actualizaciones de windows
 echo Renombrando y borrando carpetas asociadas a Windows Update...
 if exist C:\Windows\SoftwareDistribution (
     rename C:\Windows\SoftwareDistribution SoftwareDistribution.oldFolder
