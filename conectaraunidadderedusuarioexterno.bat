@@ -1,7 +1,7 @@
 @echo off
 SETLOCAL ENABLEDELAYEDEXPANSION
 
-REM borramos letras conflictivas asignando las letras y las lineque no vayamos a usar las borramos :
+REM borramos letras conflictivas asignando las letras y las lineas que no vayamos a usar las borramos :
 net use Z: /delete
 net use Y: /delete
 net use X: /delete
